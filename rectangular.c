@@ -15,8 +15,6 @@ Returns
 
 Modes rectangularmodes (double width, double height, int N)
 {
-int m=0
-int n=0;
 int found =0;
 
 int m_max=0;
@@ -25,62 +23,75 @@ int n_max=0;
 Modes guide;
 guide.cutFrequency[0]=0;
 guide.firstcoor[0]=0;
-guide.secondcoo[0]=0;
+guide.secondcoor[0]=0;
 guide.type[0]=0;
 
 
 while (found < N)
 {
-	int p;
+	int n;
 	double possiblemodes [4][n_max+1];
-	for (p=0,p<=n_max+1:p++)
+	for (n=0;n<=n_max+1;n++)
 	{
-		int k=0;
+		int m=0;
 		while (cutoff(width,height,m,n)<=guide.cutFrequency[found])
-	 		k++;
-		if (k!=0 && p!=0)
+	 		m++;
+		if (m!=0 && n!=0)
 		{
-		possiblemodes[1][p]=cutoff(width,height,m,n);
-		possiblemodes[2][p]=k;
-		possiblemodes[3][p]=p;
-		possiblemodes[4][p]=2;
+		possiblemodes[1][n]=cutoff(width,height,m,n);
+		possiblemodes[2][n]=m;
+		possiblemodes[3][n]=n;
+		possiblemodes[4][n]=2;
 		}
 		else
 		{
-		possiblemodes[1][p]=cutoff(width,height,m,n);
-		possiblemodes[2][p]=k;
-		possiblemodes[3][p]=p;
-		possiblemodes[4][p]=1;
+		possiblemodes[1][n]=cutoff(width,height,m,n);
+		possiblemodes[2][n]=m;
+		possiblemodes[3][n]=n;
+		possiblemodes[4][n]=1;
 		}
 	}/*for (p=0:n_max:p++)*/
-
-
 	
-	guide.cutFrequency[0]=0;
-	guide.firstcoor[0]=0;
-	guide.secondcoo[0]=0;
-	guide.type[0]=0;
+	
+	//The next loop works if there is no multiple modes with the same cutoff. 
+	//A sort is needed
+    int i;
+    int next=0;
+    for(i=0;i<n_max+1;i++)	
+	{
+		if (possiblemodes[1][i]<possiblemodes[1][next])
+		{
+			next=i;
+			if (i>n_max)
+				n_max++;
+		}
+	}
+	if (possiblemodes[4][next] == 2){
+		//degenerated modes, TE and TM are added
+		guide.cutFrequency[found]=possiblemodes[1][next];
+		guide.firstcoor[found]=possiblemodes[2][next];
+		guide.secondcoor[found]=possiblemodes[3][next];
+		guide.type[found]=0;
+		
+		guide.cutFrequency[found+1]=possiblemodes[1][next];
+		guide.firstcoor[found+1]=possiblemodes[2][next];
+		guide.secondcoor[found+1]=possiblemodes[3][next];
+		guide.type[found+1]=1;
+		
+		found+=2;
+	}else{
+		//only TE
+		guide.cutFrequency[found]=possiblemodes[1][next];
+		guide.firstcoor[found]=possiblemodes[2][next];
+		guide.secondcoor[found]=possiblemodes[3][next];
+		guide.type[found]=0;
+		found++;
+	}
 }/*while (found < N)*/
 
 }
-    
-            %all the modes get sortes according their cutoff frequencies
-            m=sortrows(thisIteration')';
-    
-            %If we have multiple modes with the same cutoff, we select them all.
-            for i=1:length(m(1,:))
-                if m(1,1) == m(1,i)
-                    modes = [modes m(:,i)];
-                           
-                    found =found+1;
-                end
-            end
-        end
-        %So we skip the 0 at the beginning.
-        m=modes(:,2:N+1);
-        end
         
 double cutoff(double width, double height, int m, int n)
 {
-	1/((sqrt(e*u*er*ur))*2*pi)*sqrt(((m*pi)/width)^2+((n*pi)/height)^2);
+	return 1.0/((sqrt(e*u*er*ur))*2.0*pi)*sqrt((m*pi)/width*(m*pi)/width+(n*pi)/height*(n*pi)/height);
 }
