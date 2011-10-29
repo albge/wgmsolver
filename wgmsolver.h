@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-
+//#include <features.h>
 
 #define		TRUE		1
 #define		FALSE		0
@@ -18,28 +18,45 @@
 #define         ur		1.0
 
 
-#define		version 	"wgmsolver v0"
+#define		VERSION 	"wgmsolver v0"
 
-/*struct for each guide, to have the differents modes sorted according cutoff frequency
-The type is 0 for TE, 1 for TM.
-*/
 typedef struct {
-	float cutFrequency[100];
-	int firstcoor[100];
-	int secondcoor[100];
-	int type[100];
-} Modes;
+	double x;
+	double y;
+} point;
+
+typedef struct {
+	double cutFrequency;
+	int firstcoor;
+	int secondcoor;
+	int type;
+} mode;
+
+typedef struct {
+	char* type;
+	double width;
+	double height;
+	double length;
+	point center;
+	int Nmodes;
+	mode *modes;
+} section;
+
 
 
 // wgmsolver.c
 
 int main(int argc, char *argv[]);
+int getopt(int argc, char * const argv[], const char *optstring);
 
 // misc.c
 
-void 	usage(void);
+void usage(void);
 
 //rectangular.c
-Modes rectangularmodes (double width, double height, int N);
+section *rectangularNum(section *sect, int N);
+section *rectangularFreq(section *sect, double fc);
+double rectangularrectangular(section *sect1, section *sect2);
+//Modes rectangularmodes (double width, double height, int N);
 double cutoff(double width, double height, int m, int n);
 

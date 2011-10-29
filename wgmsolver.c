@@ -1,3 +1,13 @@
+/*
+ ============================================================================
+ Name        : wgmsolver.c
+ Author      : 
+ Version     :
+ Copyright   : 
+ Description : Main
+ ============================================================================
+ */
+
 #include "wgmsolver.h"
 
 int main( int argc,char *argv[])
@@ -5,7 +15,7 @@ int main( int argc,char *argv[])
   if(argc<2){
 	printf( "No arguments\n");
   	usage();
-  	exit(-1);
+  	return EXIT_FAILURE;
   }
   
   int option;
@@ -16,18 +26,15 @@ int main( int argc,char *argv[])
     {   
       case 'h' : /* print usage and exit */
 		usage();
-		exit(0);
+		return EXIT_SUCCESS;
 
       case 'v' : /* print nec2c version */
-		puts( version );
-		exit(0);
+		puts( VERSION );
+		return EXIT_SUCCESS;
 
       default: /* print usage and exit */
 		usage();
-		exit(-1);
+		return EXIT_FAILURE;
     } /* end of switch( option ) */
   } /* while( (option = getopt(argc, argv, "i:o:hv") ) != -1 ) */
-  
-  
-  
 }
