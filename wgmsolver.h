@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <complex.h>
 //#include <features.h>
 
 #define		TRUE		1
@@ -13,7 +14,7 @@
 
 
 #define         u 		0.0000004*pi
-#define         e               1.0/(u*c*c)
+#define         e       1.0/(u*c*c)
 #define         er		1.0
 #define         ur		1.0
 
@@ -56,7 +57,7 @@ void usage(void);
 //rectangular.c
 section *rectangularNum(section *sect, int N);
 section *rectangularFreq(section *sect, double fc);
-double rectangularrectangular(section *sect1, section *sect2);
+double *rectangularrectangular(section *sect1, section *sect2, double *freqs, complex *Sparams);
 //Modes rectangularmodes (double width, double height, int N);
 double cutoff(double width, double height, int m, int n);
 
