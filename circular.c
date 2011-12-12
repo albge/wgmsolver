@@ -1,38 +1,26 @@
 /*
  * circular.c
  *
- *  Created on: 01/11/2011
+ *  Created on: 03/12/2011
  *      Author:
  */
 
 #include "wgmsolver.h"
 
 
+//array zeros Bessel (TMnm) & zeros BesselD (TEnm) sorted
+double pq[190]={1.8412,2.4048,3.0542,3.8317,3.8317,4.2012,5.1356,5.3175,5.3314,5.5201,6.3802,6.4156,6.7061,7.0156,7.0156,7.5013,7.5883,8.0152,8.4172,8.5363,8.5778,8.6537,8.7715,9.2824,9.6474,9.761,9.9361,9.9695,10.173,10.173,10.52,11.065,11.086,11.346,11.62,11.706,11.735,11.792,12.225,12.339,12.682,12.932,13.015,13.17,13.324,13.324,13.354,13.589,13.987,14.116,14.373,14.586,14.796,14.821,14.864,14.931,15.268,15.7,15.964,16.038,16.223,16.348,16.471,16.471,16.529,17.004,17.241,17.313,17.616,17.774,17.789,17.96,18.016,18.071,18.288,18.637,18.98,19.196,19.409,19.513,19.555,19.616,19.616,19.942,20.321,20.576,20.807,20.827,20.972,21.117,21.164,21.212,21.229,21.642,21.932,22.218,22.401,22.583,22.672,22.76,22.76,22.945,23.268,23.586,23.804,24.019,24.145,24.234,24.27,24.311,24.352,24.587,24.935,25.184,25.43,25.59,25.748,25.826,25.904,25.904,26.267,26.545,26.82,27.01,27.199,27.31,27.421,27.457,27.493,27.584,27.889,28.191,28.41,28.627,28.768,28.908,28.978,29.047,29.047,29.546,29.791,30.034,30.203,30.371,30.47,30.569,30.602,30.635,30.885,31.155,31.423,31.618,31.812,31.939,32.065,32.127,32.19,32.19,32.796,33.015,33.233,33.385,33.537,33.627,33.717,34.154,34.397,34.637,34.813,34.989,35.104,35.219,36.026,36.224,36.422,36.561,36.699,37.4,37.62,37.839,38,38.16,39.24,39.422,39.603,40.629,40.83,41.031,42.444,43.844};
 
-//array zeros Bessel (TMnm) (n=index, m=index+1)
-double pnm[10][10]={{2.40483,5.52008,8.65373,11.79153,14.93092,18.07106,21.21164,24.35247,27.49348,30.63461},
-					{3.83171,7.01559,10.17347,13.32369,16.47063,19.61586,22.76008,25.90367,29.04683,32.18968},
-					{5.13562,8.41724,11.61984,14.79595,17.95982,21.11700,24.27011,27.42057,30.56920,33.71652},
-					{6.38016,9.76102,13.01520,16.22347,19.40942,22.58273,25.74817,28.90835,32.06485,35.21867},
-					{7.58834,11.06471,14.37254,17.61597,20.82693,24.01902,27.19909,30.37101,33.53714,36.69900},
-					{8.77148,12.33860,15.70017,18.98013,22.21780,25.43034,28.62662,31.81172,34.98878,38.15987},
-					{9.93611,13.58929,17.00382,20.32079,23.58608,26.82015,30.03372,33.23304,36.42202,39.60324},
-					{11.08637,14.82127,18.28758,21.64154,24.93493,28.19119,31.42279,34.63709,37.83872,41.03077},
-					{12.22509,16.03777,19.55454,22.94517,26.26681,29.54566,32.79580,36.02562,39.24045,42.44389},
-					{13.35430,17.2412, 20.807, 24.2339, 27.5837, 30.8854, 34.1544, 37.4001, 40.6286, 43.8438}};
+//array index 1 (n) sorted
+int index1[190]={1,0,2,1,0,3,2,4,1,0,3,5,2,1,0,6,4,3,2,1,7,0,5,4,8,3,6,2,1,0,5,4,7,3,2,1,6,0,8,5,4,7,3,2,1,0,9,6,5,8,4,3,2,7,1,0,6,5,4,8,3,2,1,0,7,6,9,5,4,8,3,2,1,0,7,6,5,4,3,2,8,1,0,7,6,5,9,4,3,2,1,0,8,7,6,5,4,3,2,1,0,8,7,6,5,4,3,9,2,1,0,8,7,6,5,4,3,2,1,0,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,0,8,7,6,5,4,3,2,9,8,7,6,5,4,3,8,7,6,5,4,9,8,7,6,5,8,7,6,9,8,7,8,9};
+
+//array index 2 (m) sorted
+int index2[190]={1,1,1,1,1,1,1,1,2,2,1,1,2,2,2,1,1,2,2,3,1,3,1,2,1,2,1,3,3,3,2,2,1,3,3,4,2,4,1,2,3,2,3,4,4,4,1,2,3,2,3,4,4,2,5,5,3,3,4,2,4,5,5,5,3,3,2,4,4,3,5,5,6,6,3,4,4,5,5,6,3,6,6,4,4,5,3,5,6,6,7,7,4,4,5,5,6,6,7,7,7,4,5,5,6,6,7,4,7,8,8,5,5,6,6,7,7,8,8,8,5,6,6,7,7,8,8,9,9,5,6,6,7,7,8,8,9,9,9,6,7,7,8,8,9,9,10,10,6,7,7,8,8,9,9,10,10,10,7,8,8,9,9,10,10,7,8,8,9,9,10,10,8,9,9,10,10,8,9,9,10,10,9,10,10,9,10,10,10,10};
+
+//array type of mode (TE 0 or TM 1) sorted
+int type[190]={0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,0,1,0,1,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,1,0,0,1,1,1,0,0,1,0,1,0,1,1,0,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,0,1,1,0,1,0,0,1,0,1,1,0,1,0,1,0,1,1,0,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1,1,0,1,1,1};
 
 
-//array zeros BesselD (TEnm) (n=index, m=index+1)
-double  qnm[10][10]={{3.83171,7.01559,10.17347,13.32370,16.47063,19.61586,22.76008,25.90367,29.04683,32.18968},
-            		{1.84118,5.33144,8.53632,11.70600,14.86359,18.01553,21.16437,24.31133,27.45705,30.60192},
-            		{3.05424,6.70613,9.96947,13.17037,16.34752,19.51291,22.67158,25.82604,28.97767,32.12733},
-            		{4.20119,8.01524,11.34592,14.58585,17.78875,20.97248,24.14490,27.31006,30.47027,33.62695},
-            		{5.31755,9.28240,12.68191,15.96411,19.19603,22.40103,25.58976,28.76784,31.93854,35.10392},
-            		{6.41562,10.51986,13.98719,17.31284,20.57551,23.80358,27.01031,30.20285,33.38544,36.56078},
-            		{7.50127,11.73494,15.26818,18.63744,21.93172,25.18393,28.40978,31.61788,34.81339,37.99964},
-            		{8.57784,12.93239,16.52937,19.94185,23.26805,26.54503,29.79075,33.01518,36.22438,39.42227},
-            		{9.64742,14.11552,17.77401,21.22906,24.58720,27.88927,31.15533,34.39663,37.62008,40.83018},
-            		{}};
 
 /*
 Function to search for the first N modes in a circular waveguide.
@@ -47,55 +35,38 @@ Returns
 
 section *circularNum(section *sect, int N){
 
-//copy the dimensions
-double radius= sect->radius;
+	//copy the dimensions
+	double radius= sect->radius;
 
-//number of modes found
-int Nmodes=0;
+	//number of modes found
+	int ix=0;
 
-/*
-* ptr array of modes
-* */
-mode *ptr= (mode *)malloc(N*sizeof(mode));
+	/*
+	 * ptr array of modes
+	 * */
+	mode *ptr= (mode *)malloc(N*sizeof(mode));
 
-int n=0;
-int m=1;
-while(Nmodes<N){
+	while(ix<N){
 
-		double q = qnm[n][m-1];
-		double p = pnm[n][m-1];
+		mode currentMode;
+		currentMode.cutFrequency=cutoff(radius,type(ix),index1(ix),index2(ix));
+		currentMode.firstcoor=index1(ix);
+		currentMode.secondcoor=index2(ix);
+		currentMode.type=type(ix);
 
-		mode currentModeTE;
-		currentModeTE.cutFrequency=cutoff(radius,0,n,m);
-		currentModeTE.firstcoor=n;
-		currentModeTE.secondcoor=m;
-		currentModeTE.type=0;
+		*(ptr+ix)=currentMode;
 
-		mode currentModeTM;
-		currentModeTM.cutFrequency=cutoff(radius,0,n,m);
-		currentModeTM.firstcoor=n;
-		currentModeTM.secondcoor=m;
-		currentModeTM.type=0;
+		ix++;
+	}
 
-		*(ptr+Nmodes)=currentModeTE;
-		*(ptr+Nmodes+1)=currentModeTM;
+	sect->modes=ptr;
+	sect->Nmodes=N;
 
-		Nmodes+=2;
-		n++;
-		m++;
-
+	//free the pointers to pointers
+	free(ptr);
+	return sect;
 }
 
-//sort cutFrequencies
-qsort (ptr, N, sizeof(mode), compareF);
-
-sect->modes=ptr;
-sect->Nmodes=N;
-
-//free the pointers to pointers
-free(ptr);
-return sect;
-}
 
 
 /*
@@ -114,58 +85,34 @@ section *circularFreq(section *sect, double cutFreq){
 	double radius= sect->radius;
 
 	//number of modes found
-	int Nmodes=0;
+	int ix=0;
 
 	/*
 	* ptr array of modes
 	* */
-	mode *ptr= (mode *)malloc(100*sizeof(mode));
+	mode *ptr= (mode *)malloc(190*sizeof(mode));
 
-	int n=0;
-	int m=1;
-	for(int n=0; n<=9; ++n){
+	//initial frequency
+	double freq_M=cutoff(radius,type(ix),index1(ix),index2(ix));
 
-		int Nmodes0=Nmodes-1;
+	while(freq_M<cutFreq){
 
-		while(Nmodes0<Nmodes){
+		mode currentMode;
+		currentMode.cutFrequency=freq_M;
+		currentMode.firstcoor=index1(ix);
+		currentMode.secondcoor=index2(ix);
+		currentMode.type=type(ix);
 
-			Nmodes0=Nmodes;
+		*(ptr+ix)=currentMode;
 
-			double q = qnm[n][m-1];
-			double p = pnm[n][m-1];
+		ix++;
 
-			mode currentModeTE;
-			currentModeTE.cutFrequency=cutoff(radius,0,n,m);
-			currentModeTE.firstcoor=n;
-			currentModeTE.secondcoor=m;
-			currentModeTE.type=0;
-
-			mode currentModeTM;
-			currentModeTM.cutFrequency=cutoff(radius,0,n,m);
-			currentModeTM.firstcoor=n;
-			currentModeTM.secondcoor=m;
-			currentModeTM.type=0;
-
-			if(currentModeTE.cutFrequency<cutFreq){
-				*(ptr+Nmodes)=currentModeTE;
-				Nmodes++;
-			}
-			if(currentModeTM.cutFrequency<cutFreq){
-				*(ptr+Nmodes)=currentModeTM;
-				Nmodes++;
-			}
-
-			m++;
-
-		}
+		freq_M=cutoff(radius,type(ix),index1(ix),index2(ix));
 
 	}
 
-	//sort cutFrequencies
-	qsort (ptr, 100, sizeof(mode), compareF);
-
 	sect->modes=ptr;
-	sect->Nmodes=Nmodes;
+	sect->Nmodes=ix;
 
 	//free the pointers to pointers
 	free(ptr);
@@ -174,6 +121,15 @@ section *circularFreq(section *sect, double cutFreq){
 
 
 
+/*
+Function to compute the junction between two circular waveguides
+
+Parameters
+- section 1, 2
+
+Returns
+- X matrix
+*/
 
 double circularcircular(section *sect1,section *sect2){
 
@@ -184,8 +140,6 @@ double circularcircular(section *sect1,section *sect2){
 	//Polarization x (0) or y (1)
 	int pol1;
 	int pol2;
-
-
 
 
 	double X[sect1->Nmodes][sect2->Nmodes];
@@ -264,6 +218,8 @@ double circularcircular(section *sect1,section *sect2){
 		}
 	}
 
+	return X;
+
 }
 
 
@@ -273,10 +229,14 @@ double circularcircular(section *sect1,section *sect2){
 
 /*
 Calculate the cutoff frequency of TEnm or TMnm
-  Parameters
+
+Parameters
 - radius of the guide
 - type (0 TE, 1 TM)
 - n,m
+
+Returns
+-cutoff frequency
  */
 
 double cutoff(double radius, int type, int n, int m)
@@ -288,19 +248,13 @@ return 1.0/((sqrt(e*u*er*ur))*2.0*pi)*qnm[n][m-1]/radius; //TEnm
 }
 
 
-/*
- * Function that compares two cutoff frequencies
- */
-//double compareF (const void *f1, const void *f2)
-
-double compareF (const mode *m1, const mode *m2)
-{
-  return ( *(mode*)m1.cutFrequency - *(mode*)m2.cutFrequency );
-}
-
 
 /*
  * Function that calculates the first derivative of BesselJN
+ *
+ * Parameters
+ * n order
+ * r argument
  */
 
 double Djn (int n, double r)
