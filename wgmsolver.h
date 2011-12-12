@@ -18,6 +18,7 @@
 #define         er		1.0
 #define         ur		1.0
 
+#define			I		_Complex_I
 
 #define		VERSION 	"wgmsolver v0"
 
@@ -35,15 +36,13 @@ typedef struct {
 
 typedef struct {
 	char* type;
-	double width;
-	double height;
+	double width; //radius for circular
+	double height; //angle for circular
 	double length;
 	point center;
 	int Nmodes;
 	mode *modes;
 } section;
-
-
 
 // wgmsolver.c
 
@@ -57,7 +56,5 @@ void usage(void);
 //rectangular.c
 section *rectangularNum(section *sect, int N);
 section *rectangularFreq(section *sect, double fc);
-double *rectangularrectangular(section *sect1, section *sect2, double *freqs, complex *Sparams);
+double complex *rectangularrectangular(section *sect1, section *sect2, double *freqs,double complex *Sparams);
 //Modes rectangularmodes (double width, double height, int N);
-double cutoff(double width, double height, int m, int n);
-

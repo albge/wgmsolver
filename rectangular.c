@@ -46,11 +46,10 @@ section *rectangularNum(section *sect, int N){
 	//sect->Nmodes=0; //zero modes found so far
 	//sect.modes=(mode **)malloc(max_n*sizeof(*mode));
 	mode **a= (mode **)malloc((max_n+1)*sizeof(mode *));
-	if(a == NULL)
-		{
+	if(a == NULL){
 		fprintf(stderr, "out of memory\n");
 		exit(EXIT_FAILURE);
-		}
+	}
 
 	for(int n=0; n<=max_n; ++n){
 		//the maximum m FOR THIS ROW! (local maximum)
@@ -66,18 +65,17 @@ section *rectangularNum(section *sect, int N){
 		//int j=sizeof(struct mode *);
 		//int k=sizeof(mode);
 		(*(a+n))=(mode *)malloc(nElems[n]*sizeof(mode));
-		if((a+n) == NULL)
-			{
+		if((a+n) == NULL){
 			fprintf(stderr, "out of memory\n");
 			exit(EXIT_FAILURE);
-			}
+		}
 		//the row is filed with the modes
 		int sub_m=0;
 		for(int m=0;m<=m_max;m++){
 			if(n==0 && m==0){ sub_m++; continue;}
 			mode currentMode;
 			//TE
-			currentMode.cutFrequency=cutoff(width, height, m, n);
+			currentMode.cutFrequency=1.0/((sqrt(e*u*er*ur))*2.0)*sqrt((m)/width*(m)/width+(n)/height*(n)/height);
 			currentMode.firstcoor=m;
 			currentMode.secondcoor=n;
 			currentMode.type=0;
@@ -138,11 +136,10 @@ section *rectangularFreq(section *sect, double cutFreq){
 	//sect->Nmodes=0; //zero modes found so far
 	//sect.modes=(mode **)malloc(max_n*sizeof(*mode));
 	mode **a= (mode **)malloc((max_n+1)*sizeof(mode *));
-	if(a == NULL)
-		{
+	if(a == NULL){
 		fprintf(stderr, "out of memory\n");
 		exit(EXIT_FAILURE);
-		}
+	}
 
 	for(int n=0; n<=max_n; ++n){
 
@@ -160,11 +157,10 @@ section *rectangularFreq(section *sect, double cutFreq){
 		//int j=sizeof(struct mode *);
 		//int k=sizeof(mode);
 		(*(a+n))=(mode *)malloc(nElems[n]*sizeof(mode));
-		if((a+n) == NULL)
-			{
+		if((a+n) == NULL){
 			fprintf(stderr, "out of memory\n");
 			exit(EXIT_FAILURE);
-			}
+		}
 		//the row is filed with the modes
 
 		int sub_m=0;
@@ -172,7 +168,7 @@ section *rectangularFreq(section *sect, double cutFreq){
 			if(n==0 && m==0){ sub_m++; continue;}
 			mode currentMode;
 			//TE
-			currentMode.cutFrequency=cutoff(width, height, m, n);
+			currentMode.cutFrequency=1.0/((sqrt(e*u*er*ur))*2.0)*sqrt((m)/width*(m)/width+(n)/height*(n)/height);
 			currentMode.firstcoor=m;
 			currentMode.secondcoor=n;
 			currentMode.type=0;
@@ -218,7 +214,7 @@ section *rectangularFreq(section *sect, double cutFreq){
 }
 
 
-double *rectangularrectangular(section *sect1,section *sect2, double *freqs,complex *Sparams){
+double complex *rectangularrectangular(section *sect1,section *sect2, double *freqs,double complex *Sparams){
 	//num of freq dots
 	int elems=0;
 	while (*(freqs+elems)!=0)
@@ -233,7 +229,7 @@ double *rectangularrectangular(section *sect1,section *sect2, double *freqs,comp
 	int Hplane = (b1 != b2)? TRUE:FALSE;
 
 	//Maybe &Sparams? npi...
-	complex (*X)[sect1->Nmodes][sect2->Nmodes][elems] = &Sparams;
+	double complex (*X)[sect1->Nmodes][sect2->Nmodes][elems] = Sparams;
 
 	//for each mode in the guide 1
 	for(int i=0;i<sect1->Nmodes;i++){
@@ -299,7 +295,7 @@ double *rectangularrectangular(section *sect1,section *sect2, double *freqs,comp
 			//integral_y0^y1 cos(ky1 y) cos(ky2 (y-y0)) dy =
 			double i4 = (ky2*cos(ky1*y1)*sin(ky2*(y0-y1))+ky1*sin(ky1*y1)*cos(ky2*(y0-y1))-ky1*sin(ky1*y0))/((ky1+ky2)*(ky1-ky2));
 
-			complex subX[sect1->Nmodes][sect2->Nmodes];
+			double complex subX[sect1->Nmodes][sect2->Nmodes];
 			//double step
 			if (Eplane && Hplane){
 				//TE with TE
@@ -332,11 +328,67 @@ double *rectangularrectangular(section *sect1,section *sect2, double *freqs,comp
 
 		}
 	}
-	return X;
+	return (double complex*)X;
 }
+/**
+ * this method returns and array with the propagation constants
+ * for all the modes in a section.
+ *
+ * Params:
+ * - *section where the modes belong to
+ * - *freqs, frequencies where to calculate the propagation constants
+ * - freqSpots number of frequency spots
+ */
+double complex *recPropConstants(section *section,double *freqs, int freqSpots){
+	double w2[freqSpots];
+	for(int f=0;f<freqSpots;f++){
+		w2[f]=2*pi*((*freqs)*(*freqs));
+	}
+	double complex *gammas=(double complex *)malloc(section->Nmodes*freqSpots*sizeof(double complex));
+	if(gammas == NULL){
+		fprintf(stderr, "out of memory\n");
+		exit(EXIT_FAILURE);
+	}
 
+	for(int p=0;p<section->Nmodes;p++){
+		int m,n;
+		m=(section->modes+p)->firstcoor;
+		n=(section->modes+p)->secondcoor;
+		double a, b;
+		a=section->width;
+		b=section->height;
+		for(int f=0;f<freqSpots;f++){
+			*(gammas+p*freqSpots+f)=I*sqrt((w2[f]*u*e)-(m*pi/a)*(m*pi/a)-(n*pi/b)*(n*pi/b));
+		}
+	}
+	return gammas;
+}
+/**
+ * this method returns and array with the propagation constant for 1 mode
+ *
+ * Params:
+ * - *section where the modes belong to
+ * - mode, the mode of interest
+ * - *freqs, frequencies where to calculate the propagation constants
+ * - freqSpots number of frequency spots
+ */
+double complex *recModePropConstant(section *section, mode *mode,double *freqs, int freqSpots ){
+	double w2[freqSpots];
+	double complex *gammas=(double complex *)malloc(freqSpots*sizeof(complex));
+	if(gammas == NULL){
+		fprintf(stderr, "out of memory\n");
+		exit(EXIT_FAILURE);
+	}
 
-double cutoff(double width, double height, int m, int n)
-{
-	return 1.0/((sqrt(e*u*er*ur))*2.0)*sqrt((m)/width*(m)/width+(n)/height*(n)/height);
+	int m,n;
+	m=mode->firstcoor;
+	n=mode->secondcoor;
+	double a, b;
+	a=section->width;
+	b=section->height;
+	for(int f=0;f<freqSpots;f++){
+		w2[f]=2*pi*(*freqs*(*freqs));
+		*(gammas+f)=I*sqrt((w2[f]*u*e)-(m*pi/a)*(m*pi/a)-(n*pi/b)*(n*pi/b));
+	}
+	return gammas;
 }
