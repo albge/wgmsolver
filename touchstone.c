@@ -12,12 +12,7 @@
  */
 char writeTouchstone(char* filename, double complex* Sparams,double *freqValues, int Nports, int Nfreqs){
 	double complex (*data)[Nports][Nports][Nfreqs]=Sparams;
-	//max line length
-	char buffer[1024];
-	//max 9999999999 frequencies
-	char freqs[10];
-	//max 9999999999 ports
-	char ports[10];
+
 	FILE *fp;
 
 	fp=fopen("filename", "w");
@@ -27,79 +22,51 @@ char writeTouchstone(char* filename, double complex* Sparams,double *freqValues,
 	  exit(1);
 	}
 
-	sprintf(ports, "%d",Nports);
-	sprintf(freqs, "%d",Nfreqs);
-
 	//first line, ! n-port S parameters, f frequency points.
-	strcpy(buffer,"! ");
-	strcat(buffer,ports);
-	strcat(buffer,"-port S parameters, " );
-	strcat(buffer, freqs);
-	strcat(buffer, " frequency points.\n");
-
-	fprintf(fp,"%s", buffer);
-	memset(buffer, 0, sizeof(buffer));
+	fprintf(fp,"! %d-port S parameters, %d frequency points.\n", Nports, Nfreqs);
 
 	fprintf(fp, "[Version] 2.0\n");
 	fprintf(fp, "# GHz S RI R 50\n");
-
-	strcpy(buffer,"[Number of Ports]");
-	strcat(buffer, ports);
-	strcat(buffer, "\n");
-
-	fprintf(fp,"%s", buffer);
-
-	memset(buffer, 0, sizeof(buffer));
-
-	strcpy(buffer,"[Number of Frequencies] ");
-	strcat(buffer, freqs);
-	strcat(buffer, "\n");
-
-	fprintf(fp,"%s", buffer);
-
-	memset(buffer, 0, sizeof(buffer));
-
+	fprintf(fp,"[Number of Ports] %d \n", Nports);
+	fprintf(fp,"[Number of Frequencies] %d \n",Nfreqs);
 	fprintf(fp,"[Matrix Format] Full\n");
 
 	char frequency[12];
 	for(int f=0;f<Nfreqs;f++){
-		sprintf(frequency,"%.10e ",*(freqValues+f));
+		fprintf(frequency,"%.10e ",*(freqValues+f));
 		for(int i=0;i<Nports;i++){
-			sprintf(buffer,"! %d row",i);
-			fprintf(fp,"%s", buffer);
-			memset(buffer, 0, sizeof(buffer));
-
+			fprintf(fp,"! %d row",i);
 			char notfirst=FALSE;
 			int jlim=Nports/4;
 			int j=0;
 			for(int j4=0;j<jlim;j4++){
 				if(notfirst)
-				memset(frequency, 0, sizeof(frequency));
+					memset(frequency, 0, sizeof(frequency));
 				//precission 8
-				sprintf(buffer,"%s %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g \n",frequency,
+				fprintf(fp,"%s %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g \n",frequency,
 						creal(*data[i][j][f]) , cimag(*data[i][j][f]),creal(*data[i][j+1][f]) , cimag(*data[i][j+1][f]),
 						creal(*data[i][j+2][f]) , cimag(*data[i][j+2][f]),creal(*data[i][j+3][f]) , cimag(*data[i][j+3][f]));
-				fprintf(fp,"%s", buffer);
-				memset(buffer, 0, sizeof(buffer));
+				//fprintf(fp,"%s", buffer);
+				//memset(buffer, 0, sizeof(buffer));
 				j+=4;
 			}
 			jlim=Nports%4;
 			switch(jlim){
 			case 3:
-				sprintf(buffer,"%s %.8g %.8g %.8g %.8g %.8g %.8g \n",frequency,
+				fprintf(fp,"%s %.8g %.8g %.8g %.8g %.8g %.8g \n",frequency,
 				creal(*data[i][j][f]) , cimag(*data[i][j][f]),creal(*data[i][j+1][f]) , cimag(*data[i][j+1][f]),
 				creal(*data[i][j+2][f]) , cimag(*data[i][j+2][f]));
-				fprintf(fp,"%s", buffer);
+				//fprintf(fp,"%s", buffer);
 				break;
 			case 2:
-				sprintf(buffer,"%s %.8g %.8g %.8g %.8g \n",frequency,
+				fprintf(fp,"%s %.8g %.8g %.8g %.8g \n",frequency,
 				creal(*data[i][j][f]) , cimag(*data[i][j][f]),creal(*data[i][j+1][f]) , cimag(*data[i][j+1][f]));
-				fprintf(fp,"%s", buffer);
+				//fprintf(fp,"%s", buffer);
 				break;
 			case 1:
-				sprintf(buffer,"%s %.8g %.8g \n",frequency,
+				fprintf(fp,"%s %.8g %.8g \n",frequency,
 				creal(*data[i][j][f]) , cimag(*data[i][j][f]));
-				fprintf(fp,"%s", buffer);
+				//fprintf(fp,"%s", buffer);
 				break;
 			default: break;
 			}
