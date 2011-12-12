@@ -18,7 +18,7 @@ double complex *sparams(){
  * n1 must be equal to m2.
  */
 double complex *mmatrix( int Nfreqs, int m1, int n1,double complex matrix1[m1][n1][Nfreqs], int m2, int n2,double complex matrix2[m2][n2][Nfreqs]){
-	double complex retMatrix[][]=(double complex(*)[m1][n2][Nfreqs])malloc(m1*n2*Nfreqs*sizeof(double complex));
+	double complex retMatrix[m1][n2][Nfreqs]=(double complex(*)[m1][n2][Nfreqs])malloc(m1*n2*Nfreqs*sizeof(double complex));
 	for(int i=0;i<m1;i++){
 		double complex partsum[Nfreqs]=0;
 		for(int j=0;j<n2;j++){
@@ -30,4 +30,5 @@ double complex *mmatrix( int Nfreqs, int m1, int n1,double complex matrix1[m1][n
 			}
 		}
 	}
+	return retMatrix;
 }
