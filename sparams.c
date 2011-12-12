@@ -22,8 +22,10 @@ double complex *mmatrix( int Nfreqs, int m1, int n1,double complex matrix1[m1][n
 	for(int i=0;i<m1;i++){
 		double complex partsum[Nfreqs]=0;
 		for(int j=0;j<n2;j++){
-			for(int k=0;k<Nfreqs;k++){
-				partsum[k]+=matrix1[i][j][k]*matrix2[i][j][k];
+			for(int p=0;p<n1;p++){
+				for(int k=0;k<Nfreqs;k++){
+					partsum[k]+=matrix1[i][p][k]*matrix2[p][j][k];
+				}
 			}
 			for(int k=0;k<Nfreqs;k++){
 				retMatrix[i][j][k]=partsum[k];
