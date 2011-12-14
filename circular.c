@@ -67,6 +67,7 @@ int type[190]={0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,0,1,0,1,0,
 
 
 
+
 /*
 Function to search for the first N modes in a circular waveguide.
 
@@ -94,7 +95,7 @@ section *circularNum(section *sect, int N){
 	while(ix<N){
 
 		mode currentMode;
-		currentMode.cutFrequency=cutoff(radius,type[ix],index1[ix],index2[ix]);
+		currentMode.cutFrequency=1.0/((sqrt(e*u*er*ur))*2.0*pi)*pq[ix]/radius;
 		currentMode.firstcoor=index1[ix];
 		currentMode.secondcoor=index2[ix];
 		currentMode.type=type[ix];
@@ -111,6 +112,7 @@ section *circularNum(section *sect, int N){
 	free(ptr);
 	return sect;
 }
+
 
 
 
@@ -138,7 +140,7 @@ section *circularFreq(section *sect, double cutFreq){
 	mode *ptr= (mode *)malloc(190*sizeof(mode));
 
 	//initial frequency
-	double freq_M=cutoff(radius,type[ix],index1[ix],index2[ix]);
+	double freq_M=1.0/((sqrt(e*u*er*ur))*2.0*pi)*pq[ix]/radius;
 
 	while(freq_M<cutFreq){
 
@@ -152,7 +154,7 @@ section *circularFreq(section *sect, double cutFreq){
 
 		ix++;
 
-		freq_M=cutoff(radius,type[ix],index1[ix],index2[ix]);
+		freq_M=1.0/((sqrt(e*u*er*ur))*2.0*pi)*pq[ix]/radius;
 
 	}
 
@@ -163,6 +165,7 @@ section *circularFreq(section *sect, double cutFreq){
 	free(ptr);
 	return sect;
 	}
+
 
 
 
@@ -199,17 +202,17 @@ double circularcircular(section *sect1,section *sect2){
 
 			//types (TE or TM)
 			int type1=(sect1->modes+i)->type;
-			int type2=(sect2->modes+i)->type;
+			int type2=(sect2->modes+j)->type;
 
 			//indexes
 			int n1=(sect1->modes+i)->firstcoor;
 			int m1=(sect1->modes+i)->secondcoor;
-			int n2=(sect2->modes+i)->firstcoor;
-			int m2=(sect2->modes+i)->secondcoor;
+			int n2=(sect2->modes+j)->firstcoor;
+			int m2=(sect2->modes+j)->secondcoor;
 
 			//k
-			int k1;
-			int k2;
+			int k1=pq[i]/R1;
+			int k2=pq[j]/R2;
 
 			//Cross matrix
 
@@ -220,17 +223,13 @@ double circularcircular(section *sect1,section *sect2){
 					if(pol1==pol2){ //same polarization
 
 						if(type1==0){ //TE-TE
-							k1=qnm[n1][m1-1]/R1;
-							k2=qnm[n2][m2-1]/R2;
-							X(i,j)=pi/(e*er)*2*R1*k1*jn(n1,k1*R1)*Djn(n1,k2*R1)/(k1^2-k2^2);
+							X[i][j]=pi/(e*er)*2*R1*k1*jn(n1,k1*R1)*Djn(n1,k2*R1)/(k1^2-k2^2);
 
 						}else{ //TM-TM
-							k1=pnm[n1][m1-1]/R1;
-							k2=pnm[n2][m2-1]/R2;
-							X(i,j)=-pi/(e*er)*2*R1*k2*Djn(n1,k1*R1)*jn(n1,k2*R1)/(k1^2-k2^2);
+							X[i][j]=-pi/(e*er)*2*R1*k2*Djn(n1,k1*R1)*jn(n1,k2*R1)/(k1^2-k2^2);
 						}
 					}else{ //different polarization
-						X(i,j)=0;
+						X[i][j]=0;
 					}
 
 				}else{ //different type
@@ -238,25 +237,23 @@ double circularcircular(section *sect1,section *sect2){
 					if(type1==0){ //TE-TM
 
 						if(pol1!=pol2){ //different polarization
-							k1=qnm[n1][m1-1]/R1;
-							k2=pnm[n2][m2-1]/R2;
-							X(i,j)=-pi/(e*er)*2*n1*jn(n1,k1*R1)*jn(n1,k2*R1)/(k1*k2);
+							X[i][j]=-pi/(e*er)*2*n1*jn(n1,k1*R1)*jn(n1,k2*R1)/(k1*k2);
 
 							if(pol1==1){ //y-x
-								X(i,j)=-X(i,j);
+								X[i][j]=-X[i][j];
 							}
 
 						}else{ //same polarization
-							X(i,j)=0;
+							X[i][j]=0;
 						}
 
 					}else{ //TM-TE
-						X(i,j)=0;
+						X[i][j]=0;
 					}
 				}
 
 			}else{
-				X(i,j)=0; //different first coordinate
+				X[i][j]=0; //different first coordinate
 
 			}
 		}
@@ -266,29 +263,6 @@ double circularcircular(section *sect1,section *sect2){
 
 }
 
-
-
-
-
-
-/*
-Calculate the cutoff frequency of TEnm or TMnm
-
-Parameters
-- radius of the guide
-- type (0 TE, 1 TM)
-- n,m
-
-Returns
--cutoff frequency
- */
-
-double cutoff(double radius, int type, int n, int m){
-	if(type!=0){
-		return 1.0/((sqrt(e*u*er*ur))*2.0*pi)*pnm[n][m-1]/radius; //TMnm
-	}
-	return 1.0/((sqrt(e*u*er*ur))*2.0*pi)*qnm[n][m-1]/radius; //TEnm
-}
 
 
 
