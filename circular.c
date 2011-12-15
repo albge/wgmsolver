@@ -82,7 +82,7 @@ Returns
 section *circularNum(section *sect, int N){
 
 	//copy the dimensions
-	double radius= sect->radius;
+	double radius= sect->width;
 
 	//number of modes found
 	int ix=0;
@@ -129,7 +129,7 @@ Returns
 
 section *circularFreq(section *sect, double cutFreq){
 
-	double radius= sect->radius;
+	double radius= sect->width;
 
 	//number of modes found
 	int ix=0;
@@ -182,8 +182,8 @@ Returns
 double circularcircular(section *sect1,section *sect2){
 
 	//Radius
-	double R1= sect1->radius;
-	double R2= sect1->radius;
+	double R1= sect1->width;
+	double R2= sect2->width;
 
 	//Polarization x (0) or y (1)
 	int pol1;
