@@ -58,3 +58,6 @@ section *rectangularNum(section *sect, int N);
 section *rectangularFreq(section *sect, double fc);
 double complex *rectangularrectangular(section *sect1, section *sect2, double *freqs,double complex *Sparams);
 //Modes rectangularmodes (double width, double height, int N);
+
+//circular.c
+double Djn (int n, double r);

@@ -179,7 +179,7 @@ Returns
 - X matrix
 */
 
-double circularcircular(section *sect1,section *sect2){
+complex double *circularcircular(section *sect1,section *sect2){
 
 	//Radius
 	double R1= sect1->width;
@@ -190,7 +190,7 @@ double circularcircular(section *sect1,section *sect2){
 	int pol2;
 
 
-	double X[sect1->Nmodes][sect2->Nmodes];
+	complex double X[sect1->Nmodes][sect2->Nmodes];
 
 	for(int i=0;i<sect1->Nmodes;i++){
 		for(int j=0;j<sect2->Nmodes;j++){
@@ -273,8 +273,6 @@ double circularcircular(section *sect1,section *sect2){
  * n order
  * r argument
  */
-
-double Djn (int n, double r)
-{
+double Djn (int n, double r){
 	return (jn(n-1,r)-jn(n+1,r))/2;
 }

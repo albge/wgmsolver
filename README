@@ -1,2 +1,7 @@
 This is a test file!
+<<<<<<< HEAD
 I can update this file
+=======
+
+I can update this shit
+>>>>>>> b060b543e0cc300af203cb937488411e8d2d7941

@@ -339,26 +339,27 @@ double complex *rectangularrectangular(section *sect1,section *sect2, double *fr
  * - *freqs, frequencies where to calculate the propagation constants
  * - freqSpots number of frequency spots
  */
-double complex *recPropConstants(section *section,double *freqs, int freqSpots){
-	double w2[freqSpots];
-	for(int f=0;f<freqSpots;f++){
+double complex *recPropConstants(section *section,double *freqs, int Nfreqs){
+	double w2[Nfreqs];
+	for(int f=0;f<Nfreqs;f++){
 		w2[f]=2*pi*((*freqs)*(*freqs));
 	}
-	double complex *gammas=(double complex *)malloc(section->Nmodes*freqSpots*sizeof(double complex));
+	int Nmodes=section->Nmodes;
+	double complex (*gammas)[Nmodes][Nfreqs]=(double complex (*)[Nmodes][Nfreqs])malloc(Nmodes*Nfreqs*sizeof(double complex));
 	if(gammas == NULL){
 		fprintf(stderr, "out of memory\n");
 		exit(EXIT_FAILURE);
 	}
 
-	for(int p=0;p<section->Nmodes;p++){
+	for(int p=0;p<Nmodes;p++){
 		int m,n;
 		m=(section->modes+p)->firstcoor;
 		n=(section->modes+p)->secondcoor;
 		double a, b;
 		a=section->width;
 		b=section->height;
-		for(int f=0;f<freqSpots;f++){
-			*(gammas+p*freqSpots+f)=I*sqrt((w2[f]*u*e)-(m*pi/a)*(m*pi/a)-(n*pi/b)*(n*pi/b));
+		for(int f=0;f<Nfreqs;f++){
+			(*gammas)[p][f]=I*sqrt((w2[f]*u*e)-(m*pi/a)*(m*pi/a)-(n*pi/b)*(n*pi/b));
 		}
 	}
 	return gammas;
@@ -372,9 +373,9 @@ double complex *recPropConstants(section *section,double *freqs, int freqSpots){
  * - *freqs, frequencies where to calculate the propagation constants
  * - freqSpots number of frequency spots
  */
-double complex *recModePropConstant(section *section, mode *mode,double *freqs, int freqSpots ){
-	double w2[freqSpots];
-	double complex *gammas=(double complex *)malloc(freqSpots*sizeof(complex));
+double complex *recModePropConstant(section *section, mode *mode,double *freqs, int Nfreqs ){
+	double w2[Nfreqs];
+	double complex (*gammas)[Nfreqs]=(double complex (*)[Nfreqs])malloc(Nfreqs*sizeof(complex));
 	if(gammas == NULL){
 		fprintf(stderr, "out of memory\n");
 		exit(EXIT_FAILURE);
@@ -386,9 +387,9 @@ double complex *recModePropConstant(section *section, mode *mode,double *freqs, 
 	double a, b;
 	a=section->width;
 	b=section->height;
-	for(int f=0;f<freqSpots;f++){
+	for(int f=0;f<Nfreqs;f++){
 		w2[f]=2*pi*(*freqs*(*freqs));
-		*(gammas+f)=I*sqrt((w2[f]*u*e)-(m*pi/a)*(m*pi/a)-(n*pi/b)*(n*pi/b));
+		(*gammas)[f]=I*sqrt((w2[f]*u*e)-(m*pi/a)*(m*pi/a)-(n*pi/b)*(n*pi/b));
 	}
 	return gammas;
 }
