@@ -8,10 +8,6 @@
  */
 
 
-double complex *sparams(){
-return;
-}
-
 /**
  * simple matrix multiply for matrices m1xn1xNfreqs by m2xn2xNfreqs,
  * defined as m1xn1 times m2xn2 for every freq
@@ -126,17 +122,21 @@ double complex *mdiagonaltimesdiagonal(int Nfreqs, int m, int n, double complex 
  * LDU decomposition of a rectangular matrix
  */
 double complex **LDUdecomposition(double complex **LDU,int m, int Nfreqs, double complex matrix[m][m][Nfreqs]){
-	  LDU= (double complex **)malloc(3*sizeof(double complex));
+	  //Lines needing editing for LDU instead of LU are marked with <------------------
+
+	  //change to 2 to 3 for LDU
+	  LDU= (double complex **)malloc(2*sizeof(double complex)); //<------------------------------
 
 	  //Memmory needed to store a triangular matrix n*(n+1)/2
 	  double complex (*L)[m][m][Nfreqs]= (double complex (*)[m][m][Nfreqs])malloc(m*m*Nfreqs*sizeof(double complex));
 	  memset(&L,0,m*m*Nfreqs*sizeof(double complex));
 	  *LDU=(double complex *)L;
-	  double complex (*D)[m][Nfreqs]= (double complex (*)[m][Nfreqs])malloc(m*Nfreqs*sizeof(double complex));
-	  *(LDU+1)=(double complex *)D;
+	  //double complex (*D)[m][Nfreqs]= (double complex (*)[m][Nfreqs])malloc(m*Nfreqs*sizeof(double complex));
+	  //*(LDU+1)=(double complex *)D;
 	  double complex (*U)[m][m][Nfreqs]= (double complex (*)[m][m][Nfreqs])malloc(m*m*Nfreqs*sizeof(double complex));
 	  memset(&U,0,m*m*Nfreqs*sizeof(double complex));
-	  *(LDU+1)=(double complex *)U;
+	  //change to LDU+2 for LDU
+	  *(LDU+1)=(double complex *)U; //<-------------------------------------------------
 
 //	  //Fill the diagonals of the triangular matrices
 //	  for(int i=0;i<m;i++){
@@ -160,10 +160,11 @@ double complex **LDUdecomposition(double complex **LDU,int m, int Nfreqs, double
 				  p++;
 			  }
 			  //substract partial sum to get last element
-			  if (j>i){ //<--this case upper matrix
+			  if (j>=i){ //<--this case upper matrix
 				  for(int f=0; f<Nfreqs;f++){
 					  (*U)[i][j][f]=matrix[i][j][f]-partSum[j][f];
 				  }
+				  /*
 			  }else if(i==j){ //<-- Lower AND diagonal is filled
 				  for(int f=0; f<Nfreqs;f++){
 					  (*D)[i][f]=matrix[i][j][f]-partSum[j][f];
@@ -174,13 +175,69 @@ double complex **LDUdecomposition(double complex **LDU,int m, int Nfreqs, double
 					  (*L)[i][j][f]=(matrix[i][j][f]-partSum[j][f])/(*D)[i][f];
 				  }
 			  }
+			  */
+			  }else{
+				  for(int f=0; f<Nfreqs;f++){
+					  (*L)[i][j][f]=(matrix[i][j][f]-partSum[j][f]);
+				  }
+			  }
 		  }
 	  }
 	  return LDU;
 }
 
-double complex* invDiagonal(int m, int Nfreqs, double complex matrix[m][m][Nfreqs]){
 
+/*
+ * Inverse of an square matrix decomposed using a LU decomposition.
+ * [L][U][A]^-1=[I]
+ *
+ */
+double complex* LUinverse(int m, int Nfreqs, double complex ** LDU){
+	// [L][Z]=[I]
+	  double complex (*Z)[m][m][Nfreqs]= (double complex (*)[m][m][Nfreqs])malloc(m*m*Nfreqs*sizeof(double complex));
+	  memset(&Z,0,m*m*Nfreqs*sizeof(double complex));
 
-	return;
+	  double complex (*L)[m][m][Nfreqs]=(double complex (*)[m][m][Nfreqs]) *(LDU);
+	  //double complex (*D)[m][Nfreqs]=(double complex (*)[m][Nfreqs]) *(LDU+1);
+	  double complex (*U)[m][m][Nfreqs]=(double complex (*)[m][m][Nfreqs]) *(LDU+2);
+
+	  //column of the identity matrix
+	  double complex Icol[m];
+	  //partial sum
+	  double complex partSum[m][Nfreqs];
+
+	  for(int i=0;i<m;i++){
+		  memset(&Icol, 0, m*sizeof(double complex));
+		  Icol[i]=1;
+		  for(int j=0;j<m;j++){
+			  memset(&partSum, 0, m*Nfreqs*sizeof(double complex));
+			  for(int k=0;k<j;k++){
+				  for(int f=0;f<Nfreqs;f++){
+					  partSum[j][f]+=(*L)[j][k][f]*(*Z)[k][i][f];
+				  }
+			  }
+			  for(int f=0;f<Nfreqs;f++){
+				  (*Z)[i][j][f]=(Icol[j]-partSum[j][f])/(*L)[j][j][f];
+			  }
+		  }
+	  }
+
+	  double complex (*X)[m][m][Nfreqs]= (double complex (*)[m][m][Nfreqs])malloc(m*m*Nfreqs*sizeof(double complex));
+	  memset(&X,0,m*m*Nfreqs*sizeof(double complex));
+	  //[U][X]=[Z]
+	  for(int i=0;i<m;i++){
+		  for(int j=m-1;j<0;j--){
+			  memset(&partSum, 0, m*Nfreqs*sizeof(double complex));
+			  for(int k=m-1;k>j;k--){
+				  for(int f=0;f<Nfreqs;f++){
+					  partSum[j][f]+=(*U)[j][k][f]*(*X)[k][i][f];
+				  }
+			  }
+			  for(int f=0;f<Nfreqs;f++){
+				  (*X)[i][j][f]=((*Z)[i][j][f]-partSum[j][f])/(*U)[j][j][f];
+			  }
+		  }
+	  }
+
+	return (double complex *)X;
 }
