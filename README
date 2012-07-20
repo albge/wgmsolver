@@ -1,7 +1,13 @@
-This is a test file!
-<<<<<<< HEAD
-I can update this file
-=======
+Wgmsolver -Waveguide modal solver- is a small program to solve waveguide discontinuities by using 
+the Modal Matching Method.
 
-I can update this shit
->>>>>>> b060b543e0cc300af203cb937488411e8d2d7941
+The objetives of this project are, by order of importance:
+
+    - Learn
+    - Help others that want to use the MMM, so they don't have to program everything from scratch
+    - Optimize the code, so it becomes fast and light
+
+So far we are focusing on two types of waveguides, rectangular and circular.
+
+
+Questions, sugestions and requests are welcome :)
