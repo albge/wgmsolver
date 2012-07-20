@@ -1,7 +1,7 @@
 /*
  ============================================================================
  Name        : wgmsolver.c
- Author      : 
+ Author      : Alberto González
  Version     :
  Copyright   : 
  Description : Main
@@ -16,11 +16,11 @@ int main( int argc,char *argv[]){
   	usage();
   	return EXIT_FAILURE;
   }
-	point p={1,1};
-	section s={"rectangular",0.48,0.24,2,{2,2}};
   int option;
-/* process command line options */
-  while( (option = getopt(argc, argv, "i:o:hv") ) != -1 )
+  char *fileInputName=NULL;
+  char *fileOutputName=NULL;
+  /* process command line options */
+  while( (option = getopt(argc, argv, "hvf:o: ") ) != -1 )
   {
     switch( option )
     {   
@@ -29,18 +29,16 @@ int main( int argc,char *argv[]){
 		return EXIT_SUCCESS;
 
       case 'v' :
-		//puts( VERSION );
-/*
-		typedef struct {
-			double cutFrequency;
-			int firstcoor;
-			int secondcoor;
-			int type;
-		} mode;
-*/
-		s= *rectangularFreq(&s, 1000000000);
-		printf("hello %d \n",(s.Nmodes));
+		puts( VERSION );
 		return EXIT_SUCCESS;
+      case 'f':
+    	  fileInputName=optarg;
+    	  printf ("option f with value '%s'\n", optarg);
+    	  break;
+      case 'o':
+    	  fileOutputName=optarg;
+    	  printf ("option o with value '%s'\n", optarg);
+    	  break;
       default: /* print usage and exit */
 		usage();
 		return EXIT_FAILURE;

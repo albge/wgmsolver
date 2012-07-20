@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
+//#include <ctype.h>
+#include <unistd.h>
+#include <getopt.h>
 //#include <features.h>
 
 #define		TRUE		1
@@ -43,6 +46,12 @@ typedef struct {
 	int Nmodes;
 	mode *modes;
 } section;
+
+typedef struct{
+	section* source;
+	int connexions;
+	section* connected;
+} node;
 
 // wgmsolver.c
 
