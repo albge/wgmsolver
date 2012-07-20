@@ -44,6 +44,19 @@ typedef struct {
 	mode *modes;
 } section;
 
+typedef struct{
+	int Nsections;	
+	section *sections;
+	
+} topology;
+
+typedef struct{
+	double height;
+	double width;
+	char* type; //DS, Eplane, Hplane, empty --> ignore optimizations
+	section rightSection;
+	section leftSection;
+} interserction;
 // wgmsolver.c
 
 int main(int argc, char *argv[]);
