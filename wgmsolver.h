@@ -48,11 +48,26 @@ typedef struct {
 } section;
 
 typedef struct{
+<<<<<<< HEAD
 	section* source;
 	int connexions;
 	section* connected;
 } node;
 
+=======
+	int Nsections;	
+	section *sections;
+	
+} topology;
+
+typedef struct{
+	double height;
+	double width;
+	char* type; //DS, Eplane, Hplane, empty --> ignore optimizations
+	section rightSection;
+	section leftSection;
+} interserction;
+>>>>>>> be0a697cae05dc58a67eb1ab904671ce7f2d2314
 // wgmsolver.c
 
 int main(int argc, char *argv[]);
