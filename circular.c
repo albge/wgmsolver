@@ -186,8 +186,8 @@ complex double *circularcircular(section *sect1,section *sect2){
 	double R2= sect2->width;
 
 	//Polarization x (0) or y (1)
-	int pol1;
-	int pol2;
+	int pol1=0;
+	int pol2=0;
 
 
 	complex double X[sect1->Nmodes][sect2->Nmodes];

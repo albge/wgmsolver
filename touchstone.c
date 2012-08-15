@@ -11,11 +11,11 @@
  * Writes a touchstone file with a full matrix, Real and Imaginary part, for Nports, Nfreqs, in the file specified in filename.
  */
 char writeTouchstone(char* filename, double complex* Sparams,double *freqValues, int Nports, int Nfreqs){
-	double complex (*data)[Nports][Nports][Nfreqs]=Sparams;
+	double complex (*data)[Nports][Nports][Nfreqs]=(double complex (*) [Nports][Nports][Nfreqs])Sparams;
 
 	FILE *fp;
 
-	fp=fopen("filename", "w");
+	fp=fopen(filename, "w");
 	if (fp == NULL) {
 	  fprintf(stderr, "Can't open output file %s!\n",
 	          filename);
@@ -33,7 +33,7 @@ char writeTouchstone(char* filename, double complex* Sparams,double *freqValues,
 
 	char frequency[12];
 	for(int f=0;f<Nfreqs;f++){
-		fprintf(frequency,"%.10e ",*(freqValues+f));
+		fprintf(fp,"%.10e ",*(freqValues+f));
 		for(int i=0;i<Nports;i++){
 			fprintf(fp,"! %d row",i);
 			char notfirst=FALSE;

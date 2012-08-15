@@ -10,6 +10,10 @@
 
 #include "wgmsolver.h"
 
+parameters Params;
+
+topology Topolog;
+
 int main( int argc,char *argv[]){
   if(argc<2){
 	printf( "No arguments\n");
@@ -34,6 +38,7 @@ int main( int argc,char *argv[]){
       case 'f':
     	  fileInputName=optarg;
     	  printf ("option f with value '%s'\n", optarg);
+    	  configRead(optarg);
     	  break;
       case 'o':
     	  fileOutputName=optarg;

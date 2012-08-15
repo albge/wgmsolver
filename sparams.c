@@ -14,7 +14,7 @@
  *
  * retMatrix MUST BE FREED AFTER RETURNING
  */
-double complex *mmatrix( int Nfreqs, int m1, int n1,double complex matrix1[m1][n1][Nfreqs], int m2, int n2,double complex matrix2[m2][n2][Nfreqs]){
+double complex *mmatrix( int m1, int n1, int Nfreqs,double complex matrix1[m1][n1][Nfreqs], int n2, int m2, double complex matrix2[m2][n2][Nfreqs]){
 	double complex (*retMatrix)[m1][n2][Nfreqs]=(double complex(*)[m1][n2][Nfreqs])malloc(m1*n2*Nfreqs*sizeof(double complex));
 	for(int i=0;i<m1;i++){
 		double complex partsum[Nfreqs];
@@ -30,7 +30,7 @@ double complex *mmatrix( int Nfreqs, int m1, int n1,double complex matrix1[m1][n
 			}
 		}
 	}
-	return (double complex *)retMatrix;
+	return (double complex (*) [m1][n2][Nfreqs])retMatrix;
 }
 
 /**
@@ -357,7 +357,7 @@ double complex *cascade( int Nfreqs, int m1,double complex matrix1[m1][m1][Nfreq
 			(*auxMatrix1)[i][i][f]+=1;
 		}
 	}
-	complex double **LU = LUdecomposition(N,Nfreqs, auxMatrix1);
+	complex double **LU = LUdecomposition(N,Nfreqs,(double complex (*)[N][N][Nfreqs])auxMatrix1);
 	free(auxMatrix1);
 	complex double (*W)[N][N][Nfreqs] = (double complex (*)[N][N][Nfreqs])LUinverse(N,Nfreqs, LU);
 	free((*LU)+1);

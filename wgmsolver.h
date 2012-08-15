@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
@@ -9,12 +10,13 @@
 #include <getopt.h>
 //#include <features.h>
 
+#define _GNU_SOURCE
+
 #define		TRUE		1
 #define		FALSE		0
 
 #define 	pi		3.141592653589793//238462643383279502884197169399375
 #define 	c		299792458
-
 
 #define         u 		0.0000004*pi
 #define         e       1.0/(u*c*c)
@@ -48,26 +50,21 @@ typedef struct {
 } section;
 
 typedef struct{
-<<<<<<< HEAD
-	section* source;
-	int connexions;
-	section* connected;
-} node;
-
-=======
-	int Nsections;	
-	section *sections;
-	
-} topology;
+	double units;
+	double * frequencies;
+	int  Nfrequencies;
+	double	MaxFreq;
+} parameters;
 
 typedef struct{
-	double height;
-	double width;
-	char* type; //DS, Eplane, Hplane, empty --> ignore optimizations
-	section rightSection;
-	section leftSection;
-} interserction;
->>>>>>> be0a697cae05dc58a67eb1ab904671ce7f2d2314
+	int nSections;
+	section *sectionList;
+	section **ConnectionsFrom;
+	section **ConnectionsTo;
+	int *nConnectionsFrom;
+	int *nConnectionsTo;
+}topology;
+
 // wgmsolver.c
 
 int main(int argc, char *argv[]);
@@ -85,3 +82,11 @@ double complex *rectangularrectangular(section *sect1, section *sect2, double *f
 
 //circular.c
 double Djn (int n, double r);
+
+
+//
+void configRead(char* filename);
+char * removeComments(char* line);
+void printReservedWords(FILE * stream);
+int charCount(char *string, char character);
+int loadUnits(char *string);
